@@ -11,6 +11,7 @@ char *toReturn = "";
 
 bool topbar = true;
 bool caseSensitive;
+bool window_height_set = false;
 float window_height = 14;
 const char *promptCStr = "$";
 const char *font;
@@ -28,14 +29,23 @@ int main(int argc, const char **argv) {
   drawCtx.sbg = mkColor(selbgcolor);
   drawCtx.sfg = mkColor(selfgcolor);
   drawCtx.x = 0;
-  drawCtx.font_siz = 14.0;  // TODO: Fix shadows
+  drawCtx.font_siz = 14.0;
 
   CFStringRef promptStr = CFStringCreateWithCString(NULL, promptCStr, kCFStringEncodingUTF8);
-  CFStringRef fontStr = CFStringCreateWithCString(NULL, "Consolas", kCFStringEncodingUTF8);
+  CFStringRef fontStr = CFStringCreateWithCString(NULL, font ? font : "Consolas", kCFStringEncodingUTF8);
   CTFontDescriptorRef fontDesc = CTFontDescriptorCreateWithNameAndSize(fontStr, drawCtx.font_siz);
-  CTFontRef font = CTFontCreateWithFontDescriptor(fontDesc, 0.0, NULL);
+  CTFontRef ctfont = CTFontCreateWithFontDescriptor(fontDesc, 0.0, NULL);
   CFRelease(fontStr);
-  drawCtx.font = font;
+  CFRelease(fontDesc);
+  drawCtx.font = ctfont;
+
+  CGFloat ascent = CTFontGetAscent(ctfont);
+  CGFloat descent = CTFontGetDescent(ctfont);
+  CGFloat leading = CTFontGetLeading(ctfont);
+  drawCtx.font_siz = ascent + descent;
+  if (!window_height_set) {
+    window_height = ceil(drawCtx.font_siz + leading) + 6;
+  }
 
   initDraw(&drawCtx);
 

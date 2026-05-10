@@ -41,7 +41,7 @@ bool drawText(CGContextRef ctx, DrawCtx *drawCtx, CFStringRef itemName, bool sel
   }
   CGContextSetFillColorWithColor(ctx, bg);
   CGContextFillRect(ctx, CGRectMake(drawCtx->x, 0, w + 2 * space.w, drawCtx->h));
-  CGFloat y = (drawCtx->h - drawCtx->font_siz) / 2;
+  CGFloat y = (drawCtx->h - drawCtx->font_siz) / 2 + CTFontGetDescent(drawCtx->font);
   CGContextSetTextPosition(ctx, drawCtx->x + space.w, y);
   CTLineDraw(line, ctx);
   drawCtx->x += w + 2 * space.w;
@@ -60,21 +60,20 @@ void drawInput(CGContextRef ctx, DrawCtx *drawCtx, CFStringRef input) {
   CGFloat w = CTLineGetTypographicBounds(line, NULL, NULL, NULL);
   CGContextSetFillColorWithColor(ctx, bg);
   CGContextFillRect(ctx, CGRectMake(drawCtx->x, 0, w + 2 * space.w, drawCtx->h));
-  CGFloat y = (drawCtx->h - drawCtx->font_siz) / 2;
+  CGFloat y = (drawCtx->h - drawCtx->font_siz) / 2 + CTFontGetDescent(drawCtx->font);
   CGContextSetTextPosition(ctx, drawCtx->x + space.w, y);
   CTLineDraw(line, ctx);
   CFRelease(line);
   CFRelease(attrInput);
   if (w + 2 * space.w <= inputW) {
-    goto end;
+    drawCtx->x += w + 2 * space.w;
+    return;
   }
   CGContextSetFillColorWithColor(ctx, bg);
   CGContextFillRect(ctx, CGRectMake(drawCtx->x + inputW - (dots.w + space.w), 0,
                                     drawCtx->w - (drawCtx->x + w), drawCtx->h));
   CGContextSetTextPosition(ctx, drawCtx->x + inputW - (dots.w + space.w), y);
   CTLineDraw(dots.line, ctx);
-
-end:
   drawCtx->x += inputW;
 }
 

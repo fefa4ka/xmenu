@@ -40,6 +40,7 @@ DEALINGS IN THE SOFTWARE.
 
 extern bool topbar;
 extern bool caseSensitive;
+extern bool window_height_set;
 extern float window_height;
 extern const char *promptCStr;
 extern const char *font;
@@ -92,8 +93,22 @@ void parseargs(int argc, const char **argv) {
       selbgcolor = argv[++i];
     } else if (!strcmp(argv[i], "-sf")) { /* selected foreground color */
       selfgcolor = argv[++i];
+    } else if (!strcmp(argv[i], "-theme")) {
+      const char *theme = argv[++i];
+      if (!strcmp(theme, "gruvbox-dark")) {
+        normbgcolor = "#282828";
+        normfgcolor = "#ebdbb2";
+        selbgcolor  = "#d79921";
+        selfgcolor  = "#282828";
+      } else if (!strcmp(theme, "gruvbox-light")) {
+        normbgcolor = "#fbf1c7";
+        normfgcolor = "#3c3836";
+        selbgcolor  = "#d79921";
+        selfgcolor  = "#fbf1c7";
+      }
     } else if (!strcmp(argv[i], "-H")) { /* bar height */
       window_height = atof(argv[++i]);
+      window_height_set = true;
     } else {
       usage();
     }
@@ -102,8 +117,9 @@ void parseargs(int argc, const char **argv) {
 
 void usage(void) {
   fputs(
-      "usage: xmenu [-b] [-i] [-p prompt] [-fn font][-nb color] [-nf color]\n"
-      "             [-sb color] [-sf color] [-H height] [-v]\n",
+      "usage: xmenu [-b] [-i] [-p prompt] [-fn font] [-nb color] [-nf color]\n"
+      "             [-sb color] [-sf color] [-theme gruvbox-dark|gruvbox-light]\n"
+      "             [-H height] [-v]\n",
       stderr);
   exit(1);
 }
